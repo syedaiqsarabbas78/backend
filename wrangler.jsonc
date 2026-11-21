@@ -3,6 +3,12 @@
   "name": "backend",
   "main": "cloudflare/index.js",
   "compatibility_date": "2026-11-22",
+  "vars": {
+    "ALLOWED_ORIGINS": "https://frontend-qxsn.vercel.app",
+    "OPENAI_MODEL_CANDIDATES": "gpt-4.1-mini,gpt-4o-mini",
+    "OPENAI_TIMEOUT_MS": "60000",
+    "OPENAI_MAX_OUTPUT_TOKENS": "1024"
+  },
   "containers": [
     {
       "class_name": "ApiContainer",
