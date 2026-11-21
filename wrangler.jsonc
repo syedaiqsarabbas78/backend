@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "harbor-chat-api",
+  "main": "cloudflare/index.js",
+  "compatibility_date": "2026-11-22",
+  "containers": [
+    {
+      "class_name": "ApiContainer",
+      "scheduling_policy": "durable_object",
+      "images": {
+        "base": {
+          "dockerfile": "./Dockerfile",
+          "build_context": "."
+        }
+      }
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "API_CONTAINER",
+        "class_name": "ApiContainer"
+      }
+    ]
+  },
+  "exports": {
+    "ApiContainer": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
+}
