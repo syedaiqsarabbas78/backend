@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sessions     Session[]
+  chats        Chat[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Model {
+  id               String    @id @default(cuid())
+  providerModelId String    @unique
+  displayName      String
+  enabled          Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  chats            Chat[]
+  messages         Message[]
+}
+
+model Chat {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title               String    @default("New chat")
+  modelId             String?
+  model               Model?    @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  generationLockUntil DateTime?
+  generationRequestId String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  messages            Message[]
+
+  @@index([userId, updatedAt])
+}
+
+model Message {
+  id              String        @id @default(cuid())
+  chatId          String
+  chat            Chat          @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  role            MessageRole
+  content         String
+  modelId         String?
+  model           Model?        @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  status          MessageStatus
+  sequence        Int
+  clientRequestId String?
+  errorCode       String?
+  createdAt       DateTime      @default(now())
+
+  @@unique([chatId, sequence])
+  @@unique([chatId, clientRequestId])
+  @@index([chatId, sequence])
+}
+
+enum MessageRole {
+  user
+  assistant
+}
+
+enum MessageStatus {
+  pending
+  completed
+  failed
+}
