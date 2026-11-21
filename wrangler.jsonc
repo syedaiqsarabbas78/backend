@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "harbor-chat-api",
+  "name": "backend",
   "main": "cloudflare/index.js",
   "compatibility_date": "2026-11-22",
   "containers": [
